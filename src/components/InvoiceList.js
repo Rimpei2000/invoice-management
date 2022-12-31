@@ -2,16 +2,15 @@ import { useEffect, useState } from 'react';
 import { Table, Button } from 'reactstrap';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import { faThumbsUp, faThumbsDown, faTrash} from '@fortawesome/free-solid-svg-icons';
+import axios from 'axios';
 
 const InvoiceList = ({ currentInvoices, setCurrentInvoices }) => {
   const [isLoading, setIsLoading] = useState(false);
-  // const [invoices, setInvoices] = useState([]);
   
   useEffect(() => {
       const fetchData = async() => {
-          const response = await fetch('https://vm3veob5v9.execute-api.us-east-1.amazonaws.com/Dev/');
+          const response = await fetch(process.env.REACT_APP_AWS);
           const data = await response.json();
-          // setInvoices(data);
           setCurrentInvoices(data);
           setIsLoading(false);
       }
@@ -19,9 +18,15 @@ const InvoiceList = ({ currentInvoices, setCurrentInvoices }) => {
   }, []);
     
   const remove = (id) => {
-    // setInvoices(invoices.filter(i => i.Id !== id));
-    setCurrentInvoices(currentInvoices.filter(i => i.Id !== id));
-    console.log(currentInvoices)
+    axios.delete(process.env.REACT_APP_AWS, {
+      data: { "id": id }
+    })
+      .then(res => {
+        setCurrentInvoices(currentInvoices.filter(i => i.Id !== id));
+      })
+      .catch(err => {
+        console.log(err)
+      })
   }
   
   const accept = (id) => {}

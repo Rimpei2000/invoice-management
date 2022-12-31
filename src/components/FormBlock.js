@@ -34,19 +34,9 @@ const FormBlock = ({ currentInvoices, setCurrentInvoices }) => {
         Date: `${current.getDate()}/${current.getMonth()+1}/${current.getFullYear()}`
       }
     }
-    axios.post('https://vm3veob5v9.execute-api.us-east-1.amazonaws.com/Dev/', properties)
-      .then(res => {
-        console.log("res", res.config.data[0].payload)
-        
-        setCurrentInvoices([...currentInvoices, 
-          {"Amount": res.config.data.payload.Amount, 
-           "Date": res.config.data.payload.Date, 
-           "Id": res.config.data.payload.Id, 
-           "Invoice": res.config.data.payload.InvoiceNumber, 
-           "Vendor": res.config.data.payload.Vendor,
-           "state": "addedManually"
-          }])
-        console.log(currentInvoices)
+    axios.post(process.env.REACT_APP_AWS, properties)
+      .then(res => {        
+        setCurrentInvoices(prevState => ([properties.payload, ...prevState]))
       })
       .catch(err => console.log(err))
   }
