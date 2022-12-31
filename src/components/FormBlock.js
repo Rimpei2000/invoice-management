@@ -4,7 +4,7 @@ import '../App.css';
 import axios from 'axios';
 import { v1 as uuid } from 'uuid';
 
-const FormBlock = () => {
+const FormBlock = ({ currentInvoices, setCurrentInvoices }) => {
   const [vendor, setVendor] = useState('');
   const [amount, setAmount] = useState(0);
   const [invoiceNumber, setInvoiceNumber] = useState(0);
@@ -34,8 +34,20 @@ const FormBlock = () => {
         Date: `${current.getDate()}/${current.getMonth()+1}/${current.getFullYear()}`
       }
     }
-    axios.post(process.env.AWS_URL, properties)
-      .then(res => console.log(res))
+    axios.post('https://vm3veob5v9.execute-api.us-east-1.amazonaws.com/Dev/', properties)
+      .then(res => {
+        console.log("res", res.config.data[0].payload)
+        
+        setCurrentInvoices([...currentInvoices, 
+          {"Amount": res.config.data.payload.Amount, 
+           "Date": res.config.data.payload.Date, 
+           "Id": res.config.data.payload.Id, 
+           "Invoice": res.config.data.payload.InvoiceNumber, 
+           "Vendor": res.config.data.payload.Vendor,
+           "state": "addedManually"
+          }])
+        console.log(currentInvoices)
+      })
       .catch(err => console.log(err))
   }
 
